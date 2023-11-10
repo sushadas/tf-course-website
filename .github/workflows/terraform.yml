@@ -44,13 +44,23 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="dev.tfvars"
+      # run: terraform plan -input=false -var-file="dev.tfvars"
+      run: terraform plan -input=false -var-file="dev.tfvars" -out="website.plan"
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+    # Save the execution plan in an artifact
+    - name: 'Upload Plan Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: website.plan
+        path: website.plan
+        retention-days: 2
+    
+
     # On push to "main", build or change ...
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false -var-file="dev.tfvars"
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+#    - name: Terraform Apply
+#      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#      run: terraform apply -auto-approve -input=false -var-file="dev.tfvars"
+#      env:
+#        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
